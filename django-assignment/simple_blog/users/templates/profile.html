@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile.user.username }}'s Profile</title>
+</head>
+<body>
+<h1>{{ profile.user.username }}'s Profile</h1>
+
+<!-- Profile Picture -->
+<div>
+    {% if profile.profile_picture %}
+        <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture" style="width: 150px; height: 150px; border-radius: 50%;">
+    {% else %}
+        <p>No profile picture available.</p>
+    {% endif %}
+</div>
+
+<!-- Bio -->
+<div>
+    <h2>Bio</h2>
+    <p>{{ profile.bio }}</p>
+</div>
+
+<!-- Edit Profile Link (Only show if this is the logged-in user's profile) -->
+{% if user == profile.user %}
+    <p><a href="{% url 'profile_edit' %}">Edit Profile</a></p>
+{% endif %}
+
+
+<!-- Follow/Unfollow Buttons (Optional) -->
+{% if user != profile.user %}
+    {% if user.is_authenticated %}
+        {% if is_following %}
+            <form method="post" action="{% url 'unfollow_user' profile.user.username %}">
+                {% csrf_token %}
+                <button type="submit">Unfollow</button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'follow_user' profile.user.username %}">
+                {% csrf_token %}
+                <button type="submit">Follow</button>
+            </form>
+        {% endif %}
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to follow this user.</p>
+    {% endif %}
+{% endif %}
+
+<p><a href="{% url 'post_list' %}">Back to Blog Posts</a></p>
+
+</body>
+</html>
